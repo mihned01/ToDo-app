@@ -287,3 +287,102 @@ const initializeApp = (): void => {
 
 // Start the application
 initializeApp();
+
+
+const createThemeToggleHTML = (): string => {
+  return '🌙';
+};
+
+// SRP: Create theme toggle button element
+const createThemeToggleButton = (): HTMLButtonElement => {
+  const button = document.createElement('button');
+  button.className = 'theme-toggle';
+  button.innerHTML = createThemeToggleHTML();
+  button.setAttribute('aria-label', 'Toggle dark mode');
+  return button;
+};
+
+// SRP: Insert theme toggle button into DOM
+const insertThemeToggleButton = (): HTMLButtonElement => {
+  const toggleButton = createThemeToggleButton();
+  document.body.appendChild(toggleButton);
+  return toggleButton;
+};
+
+// SRP: Check if dark mode is enabled
+const isDarkModeEnabled = (): boolean => {
+  return document.body.classList.contains('dark-mode');
+};
+
+// SRP: Get stored theme preference
+const getStoredTheme = (): string | null => {
+  return localStorage.getItem('theme');
+};
+
+// SRP: Store theme preference
+const storeTheme = (theme: string): void => {
+  localStorage.setItem('theme', theme);
+};
+
+// SRP: Apply dark mode
+const applyDarkMode = (): void => {
+  document.body.classList.add('dark-mode');
+};
+
+// SRP: Apply light mode
+const applyLightMode = (): void => {
+  document.body.classList.remove('dark-mode');
+};
+
+const updateToggleButtonIcon = (button: HTMLButtonElement): void => {
+  if (isDarkModeEnabled()) {
+    button.innerHTML = '☀️';
+    button.setAttribute('aria-label', 'Toggle light mode');
+  } else {
+    button.innerHTML = '🌙';
+    button.setAttribute('aria-label', 'Toggle dark mode');
+  }
+};
+
+// SRP: Toggle theme mode
+const toggleTheme = (button: HTMLButtonElement): void => {
+  if (isDarkModeEnabled()) {
+    applyLightMode();
+    storeTheme('light');
+  } else {
+    applyDarkMode();
+    storeTheme('dark');
+  }
+  updateToggleButtonIcon(button);
+};
+
+// SRP: Apply stored theme on load
+const applyStoredTheme = (): void => {
+  const storedTheme = getStoredTheme();
+  if (storedTheme === 'dark') {
+    applyDarkMode();
+  } else {
+    applyLightMode();
+  }
+};
+
+// SRP: Handle theme toggle button click
+const handleThemeToggleClick = (button: HTMLButtonElement): void => {
+  toggleTheme(button);
+};
+
+// SRP: Add event listener to theme toggle button
+const addThemeToggleEventListener = (button: HTMLButtonElement): void => {
+  button.addEventListener('click', () => handleThemeToggleClick(button));
+};
+
+// SRP: Initialize theme toggle functionality
+const initializeThemeToggle = (): void => {
+  applyStoredTheme();
+  const toggleButton = insertThemeToggleButton();
+  updateToggleButtonIcon(toggleButton);
+  addThemeToggleEventListener(toggleButton);
+  console.log('Theme toggle initialized');
+};
+
+initializeThemeToggle();
