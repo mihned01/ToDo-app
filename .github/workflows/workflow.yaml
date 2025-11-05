@@ -38,10 +38,11 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 
-      - name: Run TestCafe Tests
-        uses: DevExpress/testcafe-action@latest
-        with:
-          args: "chrome:headless 'testcafe.js'"
+      - name: Install TestCafe
+        run: npm install -g testcafe
+
+      - name: Run TestCafe Tests (Direct Script)
+        run: xvfb-run npx testcafe chrome:headless testcafe.js
 
       - name: Store artifacts
         uses: actions/upload-artifact@v4
