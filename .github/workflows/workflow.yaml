@@ -35,6 +35,9 @@ jobs:
           local-dir: dist/
           server-dir: todo/test/
 
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
       - name: Run TestCafe Tests
         uses: DevExpress/testcafe-action@latest
         with:
