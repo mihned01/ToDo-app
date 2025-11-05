@@ -1,26 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
-  </head>
-  <body>
-    <div id="app">
-      <div class="container">
-        <h1>Todo App</h1>
-        <form action="" class="todo-form">
-          <input type="text" id="todo-input" placeholder="Enter a new todo" />
-          <button type="submit">Add Todo</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Todo List</h1>
+        
+        <form class="todo-form">
+            <input type="text" id="todo-input" placeholder="Add a new todo...">
+            <button type="submit">Add Todo</button>
         </form>
-        <!-- error handling-->
-        <div id="error-message" class="error-message">Dumbass! Enter stuff...</div>
-        <ul class="todo-list">
-          
-        </ul>
-      </div>
+        
+        <ul class="todo-list"></ul>
     </div>
+    
     <script type="module" src="/src/main.ts"></script>
-  </body>
+</body>
 </html>
