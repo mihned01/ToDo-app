@@ -23,13 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./
-        args: "chrome ToDo-app
 
       - name: Build website
         run: npm run build
-        working-directory: ./
-        args: "chrome ToDo-app
 
       - name: FTP delivery
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
@@ -37,8 +33,7 @@ jobs:
           server: ${{ vars.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: 
-          args: "chrome ToDo-app/dist/
+          local-dir: dist/
           server-dir: todo/test/
 
       - name: Run TestCafe Tests
@@ -50,8 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: 
-          args: "chrome ToDo-app/dist/
+          path: dist/
 
   deployment:
     needs: integration-delivery
