@@ -156,3 +156,20 @@ test('Should filter completed todos only', async t => {
         .expect(Selector('.todo-item.completed').count).eql(1)
         .expect(firstTodo.hasClass('completed')).ok();
 });
+
+test('Should show all todos when all filter is selected', async t => {
+    const inputField = getInputField();
+    
+    await t
+        .typeText(inputField, 'Task 1')
+        .pressKey('enter')
+        .typeText(inputField, 'Task 2')
+        .pressKey('enter');
+    
+    const firstTodo = getTodoItem('Task 1');
+    await t.click(firstTodo.find('input[type="checkbox"]'));
+    
+    await t
+        .click(getFilterButton('all'))
+        .expect(Selector('.todo-item').count).eql(2);
+});
