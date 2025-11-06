@@ -279,3 +279,15 @@ test('Should update theme toggle icon text', async t => {
         .click(themeToggle)
         .expect(themeToggle.innerText).eql('☀️');
 });
+
+// Input validation tests
+test('Should not add empty todo', async t => {
+    const inputField = getInputField();
+    const todoList = getTodoList();
+    const initialCount = await todoList.find('.todo-item').count;
+    
+    await t
+        .typeText(inputField, '   ')
+        .pressKey('enter')
+        .expect(todoList.find('.todo-item').count).eql(initialCount);
+});
