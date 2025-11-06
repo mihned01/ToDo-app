@@ -101,3 +101,21 @@ test('Should remove todo item', async t => {
         .click(removeButton)
         .expect(todoItem.exists).notOk();
 });
+
+test('Should update todo count when removing item', async t => {
+    const inputField = getInputField();
+    const todoList = getTodoList();
+    
+    await t
+        .typeText(inputField, 'First task')
+        .pressKey('enter')
+        .typeText(inputField, 'Second task')
+        .pressKey('enter');
+    
+    const initialCount = await todoList.find('.todo-item').count;
+    const firstTodo = Selector('.todo-item').nth(0);
+    
+    await t
+        .click(firstTodo.find('.remove-btn'))
+        .expect(todoList.find('.todo-item').count).eql(initialCount - 1);
+});
