@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.2](https://github.com/mihned01/ToDo-app/compare/v1.3.1...v1.3.2) (2025-11-06)
+
+
+### Bug Fixes
+
+* another attempt ([54a4610](https://github.com/mihned01/ToDo-app/commit/54a46103988ff82a3b3420be5bf510c2397f5414))
+* tests ([42d16fc](https://github.com/mihned01/ToDo-app/commit/42d16fc9fc58613d92ccf5f7422dfb0498fcf1b8))
+
 ## [1.3.1](https://github.com/mihned01/ToDo-app/compare/v1.3.0...v1.3.1) (2025-11-06)
 
 
