@@ -1,5 +1,3 @@
-// Replace your existing file with this complete implementation:
-
 import './style.css'
 
 type Priority = 'low' | 'medium' | 'high';
@@ -19,11 +17,9 @@ interface PriorityConfig {
   order: number;
 }
 
-// Application state 
 let todos: Todo[] = [];
 let currentFilter: FilterStatus = 'all';
 
-// SRP: Priority configuration - Priority data responsibility
 const getPriorityOptions = (): PriorityConfig[] => {
   return [
     { label: 'High', value: 'high', color: '#ff6b8a', order: 3 },
@@ -32,7 +28,6 @@ const getPriorityOptions = (): PriorityConfig[] => {
   ];
 };
 
-// SRP: DOM element references - DOM access responsibility
 const getDOMElements = () => {
   const todoInput = document.getElementById('todo-input') as HTMLInputElement;
   const todoForm = document.getElementById('todo-form') as HTMLFormElement;
@@ -57,7 +52,6 @@ const getDOMElements = () => {
 
 let elements: ReturnType<typeof getDOMElements>;
 
-// SRP: DOM references initialization - DOM setup responsibility
 const initializeDOMReferences = (): void => {
   elements = getDOMElements();
   
@@ -73,25 +67,21 @@ const initializeDOMReferences = (): void => {
   });
 };
 
-// SRP: Priority configuration access - Priority config responsibility
 const getPriorityConfig = (priority: Priority): PriorityConfig => {
   const options = getPriorityOptions();
   return options.find(option => option.value === priority) || options[1];
 };
 
-// SRP: Selected priority retrieval - Priority selection responsibility
 const getSelectedPriority = (): Priority => {
   return (elements.prioritySelect?.value as Priority) || 'medium';
 };
 
-// SRP: Priority selection reset - Priority reset responsibility
 const resetPrioritySelection = (): void => {
   if (elements.prioritySelect) {
     elements.prioritySelect.value = 'medium';
   }
 };
 
-// SRP: Priority badge creation - Badge HTML responsibility
 const createPriorityBadge = (priority: Priority): string => {
   const config = getPriorityConfig(priority);
   return `
@@ -103,7 +93,6 @@ const createPriorityBadge = (priority: Priority): string => {
   `;
 };
 
-// SRP: Todo sorting algorithm - Sorting responsibility
 const sortTodosByPriority = (todos: Todo[]): Todo[] => {
   return [...todos].sort((a, b) => {
     if (a.completed !== b.completed) {
@@ -115,7 +104,6 @@ const sortTodosByPriority = (todos: Todo[]): Todo[] => {
   });
 };
 
-// SRP: Todo object creation - Object creation responsibility
 const createTodo = (text: string, priority: Priority = 'medium'): Todo => {
   return {
     id: Date.now(),
@@ -125,30 +113,25 @@ const createTodo = (text: string, priority: Priority = 'medium'): Todo => {
   };
 };
 
-// SRP: Todo array management - Array manipulation responsibility
 const addTodoToArray = (todo: Todo): void => {
   todos.push(todo);
   console.log('Todo added:', todo);
 };
 
-// SRP: Todo lookup - Data retrieval responsibility
 const findTodoById = (id: number): Todo | undefined => {
   return todos.find(todo => todo.id === id);
 };
 
-// SRP: Todo removal - Array modification responsibility
 const removeTodoFromArray = (id: number): void => {
   const initialLength = todos.length;
   todos = todos.filter(todo => todo.id !== id);
   console.log(`Removed todo. Count: ${initialLength} -> ${todos.length}`);
 };
 
-// SRP: Todo completion toggle - Status modification responsibility
 const toggleTodoCompletion = (todo: Todo): void => {
   todo.completed = !todo.completed;
 };
 
-// SRP: Todo toggle by ID - ID-based toggle responsibility
 const toggleTodo = (id: number): void => {
   const todo = findTodoById(id);
   if (todo) {
@@ -157,33 +140,28 @@ const toggleTodo = (id: number): void => {
   }
 };
 
-// SRP: Progress calculation - Progress math responsibility
 const calculateProgress = (): number => {
   if (todos.length === 0) return 0;
   const completedCount = todos.filter(todo => todo.completed).length;
   return Math.round((completedCount / todos.length) * 100);
 };
 
-// SRP: Completed count calculation - Count calculation responsibility
 const getCompletedCount = (): number => {
   return todos.filter(todo => todo.completed).length;
 };
 
-// SRP: Progress visual update - Visual update responsibility
 const updateProgressVisual = (percentage: number): void => {
   if (elements.progressFill) {
     elements.progressFill.style.width = `${percentage}%`;
   }
 };
 
-// SRP: Progress text update - Text update responsibility
 const updateProgressText = (percentage: number, completed: number, total: number): void => {
   if (elements.progressText) {
     elements.progressText.textContent = `${percentage}% completed (${completed}/${total})`;
   }
 };
 
-// SRP: Progress display coordination - Progress coordination responsibility
 const updateProgressDisplay = (): void => {
   const percentage = calculateProgress();
   const completed = getCompletedCount();
@@ -191,32 +169,27 @@ const updateProgressDisplay = (): void => {
   
   updateProgressVisual(percentage);
   updateProgressText(percentage, completed, total);
-  FilterSystem.refresh(); // Integrated filter refresh
+  FilterSystem.refresh(); 
 };
 
-// SRP: Input field clearing - Input clearing responsibility
 const clearInput = (): void => {
   if (elements.todoInput) {
     elements.todoInput.value = '';
   }
 };
 
-// SRP: Checkbox element creation - Checkbox HTML responsibility
 const createCheckboxElement = (todo: Todo): string => {
   return `<input type="checkbox" ${todo.completed ? 'checked' : ''}>`;
 };
 
-// SRP: Todo text element creation - Text HTML responsibility
 const createTodoTextElement = (todo: Todo): string => {
   return `<span class="todo-text">${todo.text}</span>`;
 };
 
-// SRP: Remove button element creation - Button HTML responsibility
 const createRemoveButtonElement = (): string => {
   return `<button class="remove-btn">Remove</button>`;
 };
 
-// SRP: Todo item HTML creation - Item HTML composition responsibility
 const createTodoItemHTML = (todo: Todo): string => {
   return `
     ${createCheckboxElement(todo)}
@@ -226,7 +199,6 @@ const createTodoItemHTML = (todo: Todo): string => {
   `;
 };
 
-// SRP: Todo DOM element creation - DOM element responsibility
 const createTodoElement = (todo: Todo): HTMLLIElement => {
   const li = document.createElement('li');
   li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
@@ -235,21 +207,18 @@ const createTodoElement = (todo: Todo): HTMLLIElement => {
   return li;
 };
 
-// SRP: Checkbox change handling - Checkbox event responsibility
 const handleCheckboxChange = (todoId: number): void => {
   toggleTodo(todoId);
   renderFilteredTodos();
   updateProgressDisplay();
 };
 
-// SRP: Remove click handling - Remove event responsibility
 const handleRemoveClick = (todoId: number): void => {
   removeTodoFromArray(todoId);
   renderFilteredTodos();
   updateProgressDisplay();
 };
 
-// SRP: Todo event listeners setup - Event binding responsibility
 const addTodoEventListeners = (li: HTMLLIElement, todoId: number): void => {
   const checkbox = li.querySelector('input[type="checkbox"]') as HTMLInputElement;
   const removeButton = li.querySelector('.remove-btn') as HTMLButtonElement;
@@ -263,7 +232,6 @@ const addTodoEventListeners = (li: HTMLLIElement, todoId: number): void => {
   }
 };
 
-// SRP: Todo list clearing - List clearing responsibility
 const clearTodoList = (): void => {
   if (elements.todoList) {
     const todoItems = elements.todoList.querySelectorAll('.todo-item');
@@ -271,33 +239,28 @@ const clearTodoList = (): void => {
   }
 };
 
-// SRP: Todo element appending - Element appending responsibility
 const appendTodoToList = (todoElement: HTMLLIElement): void => {
   if (elements.todoList) {
     elements.todoList.appendChild(todoElement);
   }
 };
 
-// SRP: Empty state showing - Empty state display responsibility
 const showEmptyState = (): void => {
   if (elements.emptyState) {
     elements.emptyState.style.display = 'block';
   }
 };
 
-// SRP: Empty state hiding - Empty state hiding responsibility
 const hideEmptyState = (): void => {
   if (elements.emptyState) {
     elements.emptyState.style.display = 'none';
   }
 };
 
-// SRP: Empty list checking - Empty state validation responsibility
 const isTodosListEmpty = (): boolean => {
   return todos.length === 0;
 };
 
-// SRP: Main todo addition - Todo addition coordination responsibility
 const addTodo = (text: string): void => {
   const priority = getSelectedPriority();
   const newTodo = createTodo(text, priority);
@@ -308,12 +271,12 @@ const addTodo = (text: string): void => {
   resetPrioritySelection();
 };
 
-// SRP: Input validation - Input validation responsibility
+// Input validation 
 const isValidInput = (text: string): boolean => {
   return text.trim() !== '';
 };
 
-// SRP: Form submit handling - Form event responsibility
+// Form submit handling 
 const handleFormSubmit = (event: Event): void => {
   event.preventDefault();
   
@@ -332,7 +295,6 @@ const handleFormSubmit = (event: Event): void => {
   }
 };
 
-// SRP: Form event listeners initialization - Form event setup responsibility
 const initializeFormEventListeners = (): void => {
   if (elements.todoForm) {
     elements.todoForm.addEventListener('submit', handleFormSubmit);
@@ -342,32 +304,26 @@ const initializeFormEventListeners = (): void => {
   }
 };
 
-// SRP: Dark mode detection - Mode detection responsibility
 const isDarkModeEnabled = (): boolean => {
   return document.body.classList.contains('dark-mode');
 };
 
-// SRP: Theme storage retrieval - Storage access responsibility
 const getStoredTheme = (): string | null => {
   return localStorage.getItem('theme');
 };
 
-// SRP: Theme storage - Storage responsibility
 const storeTheme = (theme: string): void => {
   localStorage.setItem('theme', theme);
 };
 
-// SRP: Dark mode application - Dark mode responsibility
 const applyDarkMode = (): void => {
   document.body.classList.add('dark-mode');
 };
 
-// SRP: Light mode application - Light mode responsibility
 const applyLightMode = (): void => {
   document.body.classList.remove('dark-mode');
 };
 
-// SRP: Theme toggle icon update - Icon update responsibility
 const updateThemeToggleIcon = (): void => {
   if (!elements.themeToggle) return;
   
@@ -380,7 +336,6 @@ const updateThemeToggleIcon = (): void => {
   }
 };
 
-// SRP: Theme toggle logic - Theme toggle responsibility
 const toggleTheme = (): void => {
   if (isDarkModeEnabled()) {
     applyLightMode();
@@ -392,7 +347,7 @@ const toggleTheme = (): void => {
   updateThemeToggleIcon();
 };
 
-// SRP: Stored theme application - Stored theme responsibility
+// Stored theme application 
 const applyStoredTheme = (): void => {
   const storedTheme = getStoredTheme();
   if (storedTheme === 'dark') {
@@ -402,12 +357,10 @@ const applyStoredTheme = (): void => {
   }
 };
 
-// SRP: Theme toggle click handling - Theme click responsibility
 const handleThemeToggleClick = (): void => {
   toggleTheme();
 };
 
-// SRP: Theme event listeners setup - Theme event responsibility
 const initializeThemeEventListeners = (): void => {
   if (elements.themeToggle) {
     elements.themeToggle.addEventListener('click', handleThemeToggleClick);
@@ -417,7 +370,6 @@ const initializeThemeEventListeners = (): void => {
   }
 };
 
-// SRP: Theme system initialization - Theme system responsibility
 const initializeThemeSystem = (): void => {
   applyStoredTheme();
   updateThemeToggleIcon();
@@ -425,9 +377,8 @@ const initializeThemeSystem = (): void => {
   console.log('Theme system initialized');
 };
 
-// ========== ENHANCED FILTER SYSTEM (SRP-COMPLIANT) ==========
+// ==========  FILTER SYSTEM  ==========
 
-// SRP: Filter todos by status - Status filtering responsibility
 const filterTodosByStatus = (todos: Todo[], status: FilterStatus): Todo[] => {
   switch (status) {
     case 'active':
@@ -440,33 +391,27 @@ const filterTodosByStatus = (todos: Todo[], status: FilterStatus): Todo[] => {
   }
 };
 
-// SRP: Current filter access - Filter state access responsibility
 const getCurrentFilter = (): FilterStatus => {
   return currentFilter;
 };
 
-// SRP: Filter state modification - Filter state responsibility
 const setCurrentFilter = (status: FilterStatus): void => {
   currentFilter = status;
   console.log('Filter changed to:', status);
 };
 
-// SRP: Active todo counting - Active count responsibility
 const getActiveTodoCount = (): number => {
   return todos.filter(todo => !todo.completed).length;
 };
 
-// SRP: Filtered todo counting - Filtered count responsibility
 const getFilteredTodoCount = (status: FilterStatus): number => {
   return filterTodosByStatus(todos, status).length;
 };
 
-// SRP: Empty state validation for filter - Filter empty state responsibility
 const shouldShowEmptyStateForFilter = (status: FilterStatus): boolean => {
   return getFilteredTodoCount(status) === 0;
 };
 
-// SRP: Individual filter button creation - Button creation responsibility
 const createFilterButtonElement = (status: FilterStatus, label: string, count: number): HTMLButtonElement => {
   const button = document.createElement('button');
   const isActive = getCurrentFilter() === status;
@@ -489,7 +434,6 @@ const createFilterButtonElement = (status: FilterStatus, label: string, count: n
   return button;
 };
 
-// SRP: Filter bar element creation - Filter bar creation responsibility
 const createFilterBarElement = (): HTMLDivElement => {
   const filterBar = document.createElement('div');
   filterBar.className = 'filter-bar';
@@ -511,7 +455,6 @@ const createFilterBarElement = (): HTMLDivElement => {
   return filterBar;
 };
 
-// SRP: Filter container creation - Container creation responsibility
 const createFilterContainer = (): HTMLDivElement => {
   const container = document.createElement('div');
   container.className = 'filter-container';
@@ -522,17 +465,14 @@ const createFilterContainer = (): HTMLDivElement => {
   return container;
 };
 
-// SRP: Filter container access - Container access responsibility
 const getFilterContainer = (): HTMLDivElement | null => {
   return document.querySelector('.filter-container') as HTMLDivElement;
 };
 
-// SRP: Filter container existence check - Existence validation responsibility
 const isFilterContainerExists = (): boolean => {
   return document.querySelector('.filter-container') !== null;
 };
 
-// SRP: Filter container removal - Container cleanup responsibility
 const removeExistingFilterContainer = (): void => {
   const existingContainer = document.querySelector('.filter-container');
   if (existingContainer) {
@@ -541,7 +481,6 @@ const removeExistingFilterContainer = (): void => {
   }
 };
 
-// SRP: Filter container insertion - Container insertion responsibility
 const insertFilterContainer = (): void => {
   if (isFilterContainerExists()) {
     removeExistingFilterContainer();
@@ -558,7 +497,6 @@ const insertFilterContainer = (): void => {
   console.log('Filter container inserted successfully');
 };
 
-// SRP: Individual button count update - Single button update responsibility
 const updateSingleFilterButtonCount = (filterType: FilterStatus, count: number): void => {
   const countElement = document.querySelector(`[data-filter="${filterType}"] .filter-count`);
   if (countElement) {
@@ -568,7 +506,6 @@ const updateSingleFilterButtonCount = (filterType: FilterStatus, count: number):
   }
 };
 
-// SRP: Filter button counts update - Count update coordination responsibility
 const updateFilterButtonCounts = (): void => {
   const counts = {
     all: todos.length,
@@ -583,13 +520,11 @@ const updateFilterButtonCounts = (): void => {
   console.log('Filter counts updated:', counts);
 };
 
-// SRP: Individual button state update - Single button state responsibility
 const updateSingleFilterButtonState = (button: Element, isActive: boolean): void => {
   button.classList.toggle('active', isActive);
   button.setAttribute('aria-pressed', isActive.toString());
 };
 
-// SRP: Filter button states update - State update coordination responsibility
 const updateFilterButtonStates = (): void => {
   const filterButtons = document.querySelectorAll('.filter-btn');
   const currentFilterValue = getCurrentFilter();
@@ -603,7 +538,6 @@ const updateFilterButtonStates = (): void => {
   console.log(`Filter states updated - Active filter: ${currentFilterValue}`);
 };
 
-// SRP: Filter button click handling - Filter click responsibility
 const handleFilterButtonClick = (event: Event): void => {
   const target = event.target as HTMLElement;
   const button = target.closest('.filter-btn') as HTMLButtonElement;
@@ -618,7 +552,6 @@ const handleFilterButtonClick = (event: Event): void => {
   }
 };
 
-// SRP: Filter event listeners setup - Filter event responsibility
 const addFilterEventListeners = (): void => {
   const filterContainer = getFilterContainer();
   if (filterContainer) {
@@ -629,7 +562,7 @@ const addFilterEventListeners = (): void => {
   }
 };
 
-// SRP: Filter system module - Filter system encapsulation responsibility
+//Filter system module 
 const FilterSystem = {
   initialize(): void {
     this.insertContainer();
@@ -661,7 +594,7 @@ const FilterSystem = {
   }
 };
 
-// SRP: Filtered todos rendering - Filtered rendering responsibility
+// Filtered todos rendering 
 const renderFilteredTodos = (): void => {
   clearTodoList();
   
@@ -686,7 +619,7 @@ const renderFilteredTodos = (): void => {
   console.log(`Rendered ${sortedTodos.length} todos with filter: ${currentFilterStatus}`);
 };
 
-// SRP: Filtered empty state display - Filtered empty state responsibility
+// Filtered empty state display 
 const showFilteredEmptyState = (filterStatus: FilterStatus): void => {
   if (elements.emptyState) {
     const emptyStateContent = getEmptyStateContentForFilter(filterStatus);
@@ -695,7 +628,7 @@ const showFilteredEmptyState = (filterStatus: FilterStatus): void => {
   }
 };
 
-// SRP: Empty state content for filter - Empty state content responsibility
+// Empty state content for filter 
 const getEmptyStateContentForFilter = (filterStatus: FilterStatus): string => {
   switch (filterStatus) {
     case 'active':
@@ -720,12 +653,10 @@ const getEmptyStateContentForFilter = (filterStatus: FilterStatus): string => {
   }
 };
 
-// SRP: Main rendering coordination - Render coordination responsibility
 const renderTodos = (): void => {
   renderFilteredTodos();
 };
 
-// SRP: App initialization - App initialization responsibility
 const initializeApp = (): void => {
   console.log('Initializing app...');
   initializeDOMReferences();
@@ -737,7 +668,6 @@ const initializeApp = (): void => {
   console.log('App initialized with enhanced filter system');
 };
 
-// SRP: Application startup - Application lifecycle responsibility
 const startApplication = (): void => {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
@@ -746,5 +676,4 @@ const startApplication = (): void => {
   }
 };
 
-// Start the application
 startApplication();
