@@ -84,3 +84,20 @@ test('Should reset priority selection after adding todo', async t => {
         .pressKey('enter')
         .expect(prioritySelect.value).eql('medium');
 });
+
+// Remove todo functionality tests
+test('Should remove todo item', async t => {
+    const inputField = getInputField();
+    const todoText = 'Task to be removed';
+    
+    await t
+        .typeText(inputField, todoText)
+        .pressKey('enter');
+
+    const todoItem = getTodoItem(todoText);
+    const removeButton = todoItem.find('.remove-btn');
+
+    await t
+        .click(removeButton)
+        .expect(todoItem.exists).notOk();
+});
