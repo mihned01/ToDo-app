@@ -5,7 +5,6 @@ fixture`Todo App Extended Tests`
 
 // Helper functions for better maintainability (SRP)
 const getInputField = () => Selector('#todo-input');
-const getTodoForm = () => Selector('#todo-form');
 const getTodoList = () => Selector('#todo-list');
 const getPrioritySelect = () => Selector('#priority-select');
 const getThemeToggle = () => Selector('#theme-toggle');
