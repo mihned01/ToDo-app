@@ -260,3 +260,13 @@ test('Should toggle to dark mode', async t => {
         .click(themeToggle)
         .expect(body.hasClass('dark-mode')).ok();
 });
+
+test('Should toggle back to light mode', async t => {
+    const themeToggle = getThemeToggle();
+    const body = Selector('body');
+    
+    await t
+        .click(themeToggle)
+        .click(themeToggle)
+        .expect(body.hasClass('dark-mode')).notOk();
+});
