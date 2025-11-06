@@ -191,3 +191,12 @@ test('Should update filter button counts correctly', async t => {
         .expect(Selector('[data-filter="active"] .filter-count').innerText).eql('1')
         .expect(Selector('[data-filter="completed"] .filter-count').innerText).eql('1');
 });
+
+test('Should highlight active filter button', async t => {
+    await t
+        .expect(getFilterButton('all').hasClass('active')).ok()
+        .click(getFilterButton('active'))
+        .expect(getFilterButton('active').hasClass('active')).ok()
+        .expect(getFilterButton('all').hasClass('active')).notOk();
+});
+
