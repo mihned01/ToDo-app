@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/mihned01/ToDo-app/compare/v1.2.0...v1.3.0) (2025-11-06)
+
+
+### Features
+
+* fix unread variables ([dbbd3a3](https://github.com/mihned01/ToDo-app/commit/dbbd3a3b795fee24ca8eca161917d844062afa77))
+
 ## [1.2.0](https://github.com/mihned01/ToDo-app/compare/v1.1.0...v1.2.0) (2025-11-06)
 
 
