@@ -390,3 +390,63 @@ test('Should prevent form submission with empty input', async t => {
         .expect(todoList.find('.todo-item').count).eql(initialCount);
 });
 
+// Accessibility tests
+test('Should have proper ARIA attributes on filter buttons', async t => {
+    await t
+        .expect(getFilterButton('all').getAttribute('aria-pressed')).eql('true')
+        .click(getFilterButton('active'))
+        .expect(getFilterButton('active').getAttribute('aria-pressed')).eql('true')
+        .expect(getFilterButton('all').getAttribute('aria-pressed')).eql('false');
+});
+
+test('Should have proper titles on filter buttons', async t => {
+    await t
+        .expect(getFilterButton('all').getAttribute('title')).contains('Show all todos')
+        .expect(getFilterButton('active').getAttribute('title')).contains('Show active todos')
+        .expect(getFilterButton('completed').getAttribute('title')).contains('Show completed todos');
+});
+
+// Multiple todos interaction tests
+test('Should handle multiple todos with different priorities', async t => {
+    const inputField = getInputField();
+    const prioritySelect = getPrioritySelect();
+    
+    // Add high priority
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('High'))
+        .typeText(inputField, 'High priority')
+        .pressKey('enter');
+    
+    // Add low priority
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('Low'))
+        .typeText(inputField, 'Low priority')
+        .pressKey('enter');
+    
+    // Add medium priority
+    await t
+        .typeText(inputField, 'Medium priority')
+        .pressKey('enter');
+    
+    const todoItems = Selector('.todo-item');
+    await t
+        .expect(todoItems.count).eql(3)
+        .expect(todoItems.nth(0).find('.priority-high')).exists
+        .expect(todoItems.nth(1).find('.priority-medium')).exists
+        .expect(todoItems.nth(2).find('.priority-low')).exists;
+});
+
+test('Should maintain filter state when adding new todos', async t => {
+    const inputField = getInputField();
+    
+    await t
+        .typeText(inputField, 'First task')
+        .pressKey('enter')
+        .click(getFilterButton('active'))
+        .typeText(inputField, 'Second task')
+        .pressKey('enter')
+        .expect(Selector('.todo-item').count).eql(2)
+        .expect(getFilterButton('active').hasClass('active')).ok();
+});
