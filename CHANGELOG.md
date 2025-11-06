@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/mihned01/ToDo-app/compare/v1.1.0...v1.2.0) (2025-11-06)
+
+
+### Features
+
+* implement a filter by status ([5f012fa](https://github.com/mihned01/ToDo-app/commit/5f012fac76cf856fbf3dc833eb774ee81882cbd5))
+
+
+### Bug Fixes
+
+* remove stufff ([944b197](https://github.com/mihned01/ToDo-app/commit/944b197f1b6f460efc68baca2ec3d88d34ec4299))
+
 ## [1.1.0](https://github.com/mihned01/ToDo-app/compare/v1.0.0...v1.1.0) (2025-11-06)
 
 
