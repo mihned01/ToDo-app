@@ -250,3 +250,13 @@ test('Should update progress bar visual width', async t => {
         .click(todoItem.find('input[type="checkbox"]'))
         .expect(progressFill.getStyleProperty('width')).eql('100%');
 });
+
+// Theme toggle tests
+test('Should toggle to dark mode', async t => {
+    const themeToggle = getThemeToggle();
+    const body = Selector('body');
+    
+    await t
+        .click(themeToggle)
+        .expect(body.hasClass('dark-mode')).ok();
+});
