@@ -1,6 +1,5 @@
 import './style.css'
 
-// SRP: Type definitions - Type system responsibility
 type Priority = 'low' | 'medium' | 'high';
 
 interface Todo {
@@ -17,10 +16,9 @@ interface PriorityConfig {
   order: number;
 }
 
-// SRP: Application state - State management responsibility
+// Application state 
 let todos: Todo[] = [];
 
-// SRP: Priority configuration - Configuration data responsibility
 const getPriorityOptions = (): PriorityConfig[] => {
   return [
     { label: 'High', value: 'high', color: '#ff6b8a', order: 3 },
@@ -29,7 +27,7 @@ const getPriorityOptions = (): PriorityConfig[] => {
   ];
 };
 
-// SRP: DOM element references - DOM access responsibility
+// DOM element references
 const getDOMElements = () => {
   const todoInput = document.getElementById('todo-input') as HTMLInputElement;
   const todoForm = document.getElementById('todo-form') as HTMLFormElement;
@@ -52,13 +50,12 @@ const getDOMElements = () => {
   };
 };
 
-// SRP: Initialize DOM references - DOM initialization responsibility
 let elements: ReturnType<typeof getDOMElements>;
 
 const initializeDOMReferences = (): void => {
   elements = getDOMElements();
   
-  // SRP: Validate DOM elements - DOM validation responsibility
+  // Validate DOM elements
   const requiredElements = [
     'todoInput', 'todoForm', 'todoList', 'prioritySelect',
     'progressFill', 'progressText', 'emptyState', 'themeToggle'
@@ -71,25 +68,22 @@ const initializeDOMReferences = (): void => {
   });
 };
 
-// SRP: Priority configuration lookup - Data lookup responsibility
 const getPriorityConfig = (priority: Priority): PriorityConfig => {
   const options = getPriorityOptions();
   return options.find(option => option.value === priority) || options[1];
 };
 
-// SRP: Priority selection retrieval - Form data extraction responsibility
 const getSelectedPriority = (): Priority => {
   return (elements.prioritySelect?.value as Priority) || 'medium';
 };
 
-// SRP: Priority selection reset - Form reset responsibility
 const resetPrioritySelection = (): void => {
   if (elements.prioritySelect) {
     elements.prioritySelect.value = 'medium';
   }
 };
 
-// SRP: Priority badge HTML creation - Badge HTML generation responsibility
+// Priority badge 
 const createPriorityBadge = (priority: Priority): string => {
   const config = getPriorityConfig(priority);
   return `
@@ -101,7 +95,7 @@ const createPriorityBadge = (priority: Priority): string => {
   `;
 };
 
-// SRP: Todo sorting algorithm - Sorting logic responsibility
+// Todo sorting algorithm 
 const sortTodosByPriority = (todos: Todo[]): Todo[] => {
   return [...todos].sort((a, b) => {
     // First sort by completion status (incomplete tasks first)
@@ -115,7 +109,7 @@ const sortTodosByPriority = (todos: Todo[]): Todo[] => {
   });
 };
 
-// SRP: Todo object creation - Object factory responsibility
+// Todo object creation 
 const createTodo = (text: string, priority: Priority = 'medium'): Todo => {
   return {
     id: Date.now(),
@@ -125,30 +119,29 @@ const createTodo = (text: string, priority: Priority = 'medium'): Todo => {
   };
 };
 
-// SRP: Todo array management - Array manipulation responsibility
+// Todo array management - Array manipulation
 const addTodoToArray = (todo: Todo): void => {
   todos.push(todo);
   console.log('Todo added:', todo);
 };
 
-// SRP: Todo lookup - Data retrieval responsibility
+// Todo lookup - Data retrieval 
 const findTodoById = (id: number): Todo | undefined => {
   return todos.find(todo => todo.id === id);
 };
 
-// SRP: Todo removal - Array modification responsibility
+//Todo removal - Array modification 
 const removeTodoFromArray = (id: number): void => {
   const initialLength = todos.length;
   todos = todos.filter(todo => todo.id !== id);
   console.log(`Removed todo. Count: ${initialLength} -> ${todos.length}`);
 };
 
-// SRP: Todo completion toggle - State modification responsibility
 const toggleTodoCompletion = (todo: Todo): void => {
   todo.completed = !todo.completed;
 };
 
-// SRP: Todo toggle by ID - Todo state coordination responsibility
+// Todo toggle by ID 
 const toggleTodo = (id: number): void => {
   const todo = findTodoById(id);
   if (todo) {
@@ -157,33 +150,30 @@ const toggleTodo = (id: number): void => {
   }
 };
 
-// SRP: Progress calculation - Mathematical calculation responsibility
+// Progress calculation 
 const calculateProgress = (): number => {
   if (todos.length === 0) return 0;
   const completedCount = todos.filter(todo => todo.completed).length;
   return Math.round((completedCount / todos.length) * 100);
 };
 
-// SRP: Completed count calculation - Count calculation responsibility
+// Completed count calculation 
 const getCompletedCount = (): number => {
   return todos.filter(todo => todo.completed).length;
 };
 
-// SRP: Progress visual update - Visual update responsibility
 const updateProgressVisual = (percentage: number): void => {
   if (elements.progressFill) {
     elements.progressFill.style.width = `${percentage}%`;
   }
 };
 
-// SRP: Progress text update - Text content update responsibility
 const updateProgressText = (percentage: number, completed: number, total: number): void => {
   if (elements.progressText) {
     elements.progressText.textContent = `${percentage}% completed (${completed}/${total})`;
   }
 };
 
-// SRP: Complete progress update - Progress coordination responsibility
 const updateProgressDisplay = (): void => {
   const percentage = calculateProgress();
   const completed = getCompletedCount();
@@ -230,14 +220,12 @@ const createTodoElement = (todo: Todo): HTMLLIElement => {
   return li;
 };
 
-// Checkbox event handling 
 const handleCheckboxChange = (todoId: number): void => {
   toggleTodo(todoId);
   renderTodos();
   updateProgressDisplay();
 };
 
-// Remove button event handling 
 const handleRemoveClick = (todoId: number): void => {
   removeTodoFromArray(todoId);
   renderTodos();
