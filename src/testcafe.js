@@ -119,3 +119,22 @@ test('Should update todo count when removing item', async t => {
         .click(firstTodo.find('.remove-btn'))
         .expect(todoList.find('.todo-item').count).eql(initialCount - 1);
 });
+
+// Filter system tests
+test('Should filter active todos only', async t => {
+    const inputField = getInputField();
+    
+    await t
+        .typeText(inputField, 'Active task')
+        .pressKey('enter')
+        .typeText(inputField, 'Task to complete')
+        .pressKey('enter');
+    
+    const secondTodo = getTodoItem('Task to complete');
+    await t.click(secondTodo.find('input[type="checkbox"]'));
+    
+    await t
+        .click(getFilterButton('active'))
+        .expect(Selector('.todo-item').count).eql(1)
+        .expect(getTodoItem('Active task')).exists;
+});
