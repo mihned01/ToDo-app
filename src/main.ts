@@ -1,6 +1,8 @@
 import './style.css'
 
 type Priority = 'low' | 'medium' | 'high';
+type FilterStatus = 'all' | 'active' | 'completed';
+
 
 interface Todo {
   id: number;
@@ -222,14 +224,16 @@ const createTodoElement = (todo: Todo): HTMLLIElement => {
 
 const handleCheckboxChange = (todoId: number): void => {
   toggleTodo(todoId);
-  renderTodos();
+  renderFilteredTodos(); // Changed from renderTodos() to use filter-aware rendering
   updateProgressDisplay();
+  updateFilterBar(); 
 };
 
 const handleRemoveClick = (todoId: number): void => {
   removeTodoFromArray(todoId);
-  renderTodos();
+  renderFilteredTodos(); 
   updateProgressDisplay();
+  updateFilterBar(); 
 };
 
 // Todo event listeners setup 
@@ -300,8 +304,9 @@ const addTodo = (text: string): void => {
   const priority = getSelectedPriority();
   const newTodo = createTodo(text, priority);
   addTodoToArray(newTodo);
-  renderTodos();
+  renderFilteredTodos(); 
   updateProgressDisplay();
+  updateFilterBar();
   clearInput();
   resetPrioritySelection();
 };
@@ -431,4 +436,221 @@ const startApplication = (): void => {
   }
 };
 
+let currentFilter: FilterStatus = 'all';
+
+// Filter todos by completion status - Status filtering responsibility
+const filterTodosByStatus = (todos: Todo[], status: FilterStatus): Todo[] => {
+  switch (status) {
+    case 'active':
+      return todos.filter(todo => !todo.completed);
+    case 'completed':
+      return todos.filter(todo => todo.completed);
+    case 'all':
+    default:
+      return todos;
+  }
+};
+
+// Get current filter status - Filter state access responsibility
+const getCurrentFilter = (): FilterStatus => {
+  return currentFilter;
+};
+
+const setCurrentFilter = (status: FilterStatus): void => {
+  currentFilter = status;
+  console.log('Filter changed to:', status);
+};
+
+// Get active todo count - Active counting responsibility
+const getActiveTodoCount = (): number => {
+  return todos.filter(todo => !todo.completed).length;
+};
+
+// Get filtered todo count 
+const getFilteredTodoCount = (status: FilterStatus): number => {
+  return filterTodosByStatus(todos, status).length;
+};
+
+// Check if filter should show empty state 
+const shouldShowEmptyStateForFilter = (status: FilterStatus): boolean => {
+  return getFilteredTodoCount(status) === 0;
+};
+
+const createFilterButtonHTML = (status: FilterStatus, label: string, count: number): string => {
+  const isActive = getCurrentFilter() === status;
+  const activeClass = isActive ? 'active' : '';
+  
+  return `
+    <button class="filter-btn ${activeClass}" 
+            data-filter="${status}"
+            aria-pressed="${isActive}"
+            title="Show ${label.toLowerCase()} todos">
+      ${label}
+      <span class="filter-count">${count}</span>
+    </button>
+  `;
+};
+
+const createFilterBarHTML = (): string => {
+  const allCount = todos.length;
+  const activeCount = getActiveTodoCount();
+  const completedCount = getCompletedCount();
+  
+  return `
+    <div class="filter-bar" role="tablist" aria-label="Filter todos by status">
+      ${createFilterButtonHTML('all', 'All', allCount)}
+      ${createFilterButtonHTML('active', 'Active', activeCount)}
+      ${createFilterButtonHTML('completed', 'Completed', completedCount)}
+    </div>
+  `;
+};
+
+// Create filter container element - Filter DOM creation responsibility
+const createFilterContainer = (): HTMLDivElement => {
+  const container = document.createElement('div');
+  container.className = 'filter-container';
+  container.innerHTML = createFilterBarHTML();
+  return container;
+};
+
+//  Get filter container element - Filter DOM access responsibility
+const getFilterContainer = (): HTMLDivElement | null => {
+  return document.querySelector('.filter-container') as HTMLDivElement;
+};
+
+const insertFilterContainer = (): void => {
+  const progressContainer = document.querySelector('.progress-container');
+  const filterContainer = createFilterContainer();
+  
+  if (progressContainer && progressContainer.parentNode) {
+    progressContainer.parentNode.insertBefore(filterContainer, progressContainer.nextSibling);
+  }
+};
+
+const updateFilterButtonStates = (): void => {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const currentFilterValue = getCurrentFilter();
+  
+  filterButtons.forEach(button => {
+    const buttonFilter = button.getAttribute('data-filter');
+    const isActive = buttonFilter === currentFilterValue;
+    
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', isActive.toString());
+  });
+};
+
+const updateFilterButtonCounts = (): void => {
+  const allCount = todos.length;
+  const activeCount = getActiveTodoCount();
+  const completedCount = getCompletedCount();
+  
+  const updateButtonCount = (filter: string, count: number) => {
+    const button = document.querySelector(`[data-filter="${filter}"] .filter-count`);
+    if (button) {
+      button.textContent = count.toString();
+    }
+  };
+  
+  updateButtonCount('all', allCount);
+  updateButtonCount('active', activeCount);
+  updateButtonCount('completed', completedCount);
+};
+
+// Update complete filter bar 
+const updateFilterBar = (): void => {
+  updateFilterButtonStates();
+  updateFilterButtonCounts();
+};
+
+const handleFilterButtonClick = (event: Event): void => {
+  const target = event.target as HTMLElement;
+  const button = target.closest('.filter-btn') as HTMLButtonElement;
+  
+  if (!button) return;
+  
+  const filterStatus = button.getAttribute('data-filter') as FilterStatus;
+  if (filterStatus) {
+    setCurrentFilter(filterStatus);
+    renderFilteredTodos();
+    updateFilterBar();
+  }
+};
+
+// Filter event listeners 
+const addFilterEventListeners = (): void => {
+  const filterContainer = getFilterContainer();
+  if (filterContainer) {
+    filterContainer.addEventListener('click', handleFilterButtonClick);
+    console.log('Filter event listeners added');
+  }
+};
+
+// Initialize filter system 
+const initializeFilterSystem = (): void => {
+  insertFilterContainer();
+  addFilterEventListeners();
+  updateFilterBar();
+  console.log('Filter system initialized');
+};
+
+
+const renderFilteredTodos = (): void => {
+  clearTodoList();
+  
+  const currentFilterStatus = getCurrentFilter();
+  const filteredTodos = filterTodosByStatus(todos, currentFilterStatus);
+  
+  if (shouldShowEmptyStateForFilter(currentFilterStatus)) {
+    showFilteredEmptyState(currentFilterStatus);
+    return;
+  }
+  
+  hideEmptyState();
+  
+  const sortedTodos = sortTodosByPriority(filteredTodos);
+  
+  sortedTodos.forEach((todo) => {
+    const li = createTodoElement(todo);
+    addTodoEventListeners(li, todo.id);
+    appendTodoToList(li);
+  });
+  
+  console.log(`Rendered ${sortedTodos.length} todos with filter: ${currentFilterStatus}`);
+};
+
+const showFilteredEmptyState = (filterStatus: FilterStatus): void => {
+  if (elements.emptyState) {
+    const emptyStateContent = getEmptyStateContentForFilter(filterStatus);
+    elements.emptyState.innerHTML = emptyStateContent;
+    elements.emptyState.style.display = 'block';
+  }
+};
+
+const getEmptyStateContentForFilter = (filterStatus: FilterStatus): string => {
+  switch (filterStatus) {
+    case 'active':
+      return `
+        <div class="empty-icon">✅</div>
+        <h3>All tasks completed!</h3>
+        <p>Great job! You've completed all your tasks. Add new ones to stay productive.</p>
+      `;
+    case 'completed':
+      return `
+        <div class="empty-icon">📋</div>
+        <h3>No completed tasks yet!</h3>
+        <p>Complete some tasks to see them here. Get started on your active tasks!</p>
+      `;
+    case 'all':
+    default:
+      return `
+        <div class="empty-icon">📝</div>
+        <h3>No todos yet!</h3>
+        <p>Add your first todo above to get started organizing your tasks.</p>
+      `;
+  }
+};
+
+
+initializeFilterSystem();
 startApplication();
