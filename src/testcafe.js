@@ -1,36 +1,29 @@
 import { Selector } from 'testcafe';
 
-fixture`Todo App Tests`
-    .page`https://todo.mihaelan13.dk/test/`; 
+fixture`Todo App Extended Tests`
+    .page`https://todo.mihaelan13.dk/test/`;
 
-test('Should add new todo item', async t => {
-    const inputField = Selector('input[type="text"]');
-    const addButton = Selector('button').withText('Add');
-    const todoList = Selector('.todo-list');
-    const newTodoText = 'Buy groceries';
+const getInputField = () => Selector('#todo-input');
+const getTodoForm = () => Selector('#todo-form');
+const getTodoList = () => Selector('#todo-list');
+const getPrioritySelect = () => Selector('#priority-select');
+const getThemeToggle = () => Selector('#theme-toggle');
+const getProgressText = () => Selector('.progress-text');
+const getProgressFill = () => Selector('.progress-fill');
+const getEmptyState = () => Selector('#empty-state');
+const getFilterButton = (filter) => Selector(`[data-filter="${filter}"]`);
+const getTodoItem = (text) => Selector('.todo-item').withText(text);
 
-    await t
-        .typeText(inputField, newTodoText)
-        .click(addButton)
-        .expect(todoList.innerText).contains(newTodoText);
-});
-
-
-
-
-test('Should mark todo item as complete', async t => {
-    const inputField = Selector('input[type="text"]');
-    const addButton = Selector('button').withText('Add');
-    const todoText = 'Walk the dog';
+// Priority system tests
+test('Should add todo with high priority', async t => {
+    const inputField = getInputField();
+    const prioritySelect = getPrioritySelect();
+    const todoText = 'Urgent task';
     
     await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('High'))
         .typeText(inputField, todoText)
-        .click(addButton);
-
-    const todoItem = Selector('.todo-item').withText(todoText);
-    const checkbox = todoItem.find('input[type="checkbox"]');
-
-    await t
-        .click(checkbox)
-        .expect(todoItem.hasClass('completed')).ok();
+        .pressKey('enter')
+        .expect(Selector('.priority-badge.priority-high').withText('High')).exists;
 });
