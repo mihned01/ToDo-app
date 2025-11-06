@@ -200,3 +200,25 @@ test('Should highlight active filter button', async t => {
         .expect(getFilterButton('all').hasClass('active')).notOk();
 });
 
+// Progress tracking tests
+test('Should show zero progress when no todos exist', async t => {
+    const progressText = getProgressText();
+    await t.expect(progressText.innerText).contains('0%');
+});
+
+test('Should update progress when todos are completed', async t => {
+    const inputField = getInputField();
+    const progressText = getProgressText();
+    
+    await t
+        .typeText(inputField, 'Task 1')
+        .pressKey('enter')
+        .typeText(inputField, 'Task 2')
+        .pressKey('enter');
+    
+    const firstTodo = Selector('.todo-item').nth(0);
+    await t
+        .click(firstTodo.find('input[type="checkbox"]'))
+        .expect(progressText.innerText).contains('50%');
+});
+
