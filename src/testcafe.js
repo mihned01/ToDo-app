@@ -222,7 +222,6 @@ test('Should update progress when todos are completed', async t => {
         .expect(progressText.innerText).contains('50%');
 });
 
-
 test('Should show 100% progress when all todos are completed', async t => {
     const inputField = getInputField();
     const progressText = getProgressText();
