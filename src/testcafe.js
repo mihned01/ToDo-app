@@ -321,3 +321,50 @@ test('Should trim whitespace from todo text', async t => {
         .pressKey('enter')
         .expect(getTodoItem('Trimmed task')).exists;
 });
+
+// Empty state tests
+test('Should show empty state when no todos exist', async t => {
+    const emptyState = getEmptyState();
+    await t
+        .expect(emptyState.visible).ok()
+        .expect(emptyState.innerText).contains('No todos yet!');
+});
+
+test('Should hide empty state when todos are added', async t => {
+    const inputField = getInputField();
+    const emptyState = getEmptyState();
+    
+    await t
+        .typeText(inputField, 'First task')
+        .pressKey('enter')
+        .expect(emptyState.visible).notOk();
+});
+
+test('Should show empty state for active filter when all tasks completed', async t => {
+    const inputField = getInputField();
+    const emptyState = getEmptyState();
+    
+    await t
+        .typeText(inputField, 'Task to complete')
+        .pressKey('enter');
+    
+    const todoItem = Selector('.todo-item');
+    await t
+        .click(todoItem.find('input[type="checkbox"]'))
+        .click(getFilterButton('active'))
+        .expect(emptyState.visible).ok()
+        .expect(emptyState.innerText).contains('All tasks completed!');
+});
+
+test('Should show empty state for completed filter when no tasks completed', async t => {
+    const inputField = getInputField();
+    const emptyState = getEmptyState();
+    
+    await t
+        .typeText(inputField, 'Active task')
+        .pressKey('enter')
+        .click(getFilterButton('completed'))
+        .expect(emptyState.visible).ok()
+        .expect(emptyState.innerText).contains('No completed tasks yet!');
+});
+
