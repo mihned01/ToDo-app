@@ -406,7 +406,6 @@ const initializeThemeEventListeners = (): void => {
   }
 };
 
-// Theme system initialization 
 const initializeThemeSystem = (): void => {
   applyStoredTheme();
   updateThemeToggleIcon();
