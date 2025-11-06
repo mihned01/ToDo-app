@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/mihned01/ToDo-app/compare/v1.0.0...v1.1.0) (2025-11-06)
+
+
+### Features
+
+* Add priority levels system ([19553e9](https://github.com/mihned01/ToDo-app/commit/19553e9741889287c2c5b4f295e04f876ea8d1ce))
+* Implement priority levels feature ([c47e0b7](https://github.com/mihned01/ToDo-app/commit/c47e0b7b4983a211578c5fe0c99a79aa9b58bef7))
+
+
+### Bug Fixes
+
+* Change relative path to test file ([fbd16b7](https://github.com/mihned01/ToDo-app/commit/fbd16b7c8d3b883c8a3153236819a543b5dbbbf8))
+* **ci:** Run workflow in feature branches ([1774b02](https://github.com/mihned01/ToDo-app/commit/1774b0246f448836ccfc0340db9e689601de376f))
+* Make vite look the right place for JS and CSS ([cd1bdfa](https://github.com/mihned01/ToDo-app/commit/cd1bdfa9128cf0e263b436cf9b3ff6bc523c3f55))
+
 ## 1.0.0 (2025-11-05)
 
 
