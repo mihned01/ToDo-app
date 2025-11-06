@@ -50,3 +50,25 @@ test('Should add todo with low priority', async t => {
         .pressKey('enter')
         .expect(Selector('.priority-badge.priority-low').withText('Low')).exists;
 });
+
+test('Should sort todos by priority order', async t => {
+    const inputField = getInputField();
+    const prioritySelect = getPrioritySelect();
+    
+    // Add low priority task first
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('Low'))
+        .typeText(inputField, 'Low priority task')
+        .pressKey('enter');
+    
+    // Add high priority task second
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('High'))
+        .typeText(inputField, 'High priority task')
+        .pressKey('enter');
+    
+    const firstTodo = Selector('.todo-item').nth(0);
+    await t.expect(firstTodo.find('.priority-badge.priority-high')).exists;
+});
