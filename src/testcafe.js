@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture`Todo App Tests`
-    .page`http://localhost:3000`; 
+    .page`https://todo.mihaelan13.dk/test/`; 
 
 test('Should add new todo item', async t => {
     const inputField = Selector('input[type="text"]');
