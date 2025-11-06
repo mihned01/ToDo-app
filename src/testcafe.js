@@ -27,3 +27,26 @@ test('Should add todo with high priority', async t => {
         .pressKey('enter')
         .expect(Selector('.priority-badge.priority-high').withText('High')).exists;
 });
+
+test('Should add todo with medium priority by default', async t => {
+    const inputField = getInputField();
+    const todoText = 'Default priority task';
+    
+    await t
+        .typeText(inputField, todoText)
+        .pressKey('enter')
+        .expect(Selector('.priority-badge.priority-medium').withText('Medium')).exists;
+});
+
+test('Should add todo with low priority', async t => {
+    const inputField = getInputField();
+    const prioritySelect = getPrioritySelect();
+    const todoText = 'Low priority task';
+    
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('Low'))
+        .typeText(inputField, todoText)
+        .pressKey('enter')
+        .expect(Selector('.priority-badge.priority-low').withText('Low')).exists;
+});
