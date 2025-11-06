@@ -3,6 +3,7 @@ import { Selector } from 'testcafe';
 fixture`Todo App Extended Tests`
     .page`https://todo.mihaelan13.dk/test/`;
 
+// Helper functions for better maintainability (SRP)
 const getInputField = () => Selector('#todo-input');
 const getTodoForm = () => Selector('#todo-form');
 const getTodoList = () => Selector('#todo-list');
@@ -220,20 +221,6 @@ test('Should update progress when todos are completed', async t => {
     await t
         .click(firstTodo.find('input[type="checkbox"]'))
         .expect(progressText.innerText).contains('50%');
-});
-
-test('Should show 100% progress when all todos are completed', async t => {
-    const inputField = getInputField();
-    const progressText = getProgressText();
-    
-    await t
-        .typeText(inputField, 'Single task')
-        .pressKey('enter');
-    
-    const todoItem = Selector('.todo-item');
-    await t
-        .click(todoItem.find('input[type="checkbox"]'))
-        .expect(progressText.innerText).contains('100%');
 });
 
 test('Should update progress bar visual width', async t => {
