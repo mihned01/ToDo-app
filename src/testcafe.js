@@ -291,3 +291,14 @@ test('Should not add empty todo', async t => {
         .pressKey('enter')
         .expect(todoList.find('.todo-item').count).eql(initialCount);
 });
+
+test('Should not add todo with only whitespace', async t => {
+    const inputField = getInputField();
+    const todoList = getTodoList();
+    const initialCount = await todoList.find('.todo-item').count;
+    
+    await t
+        .typeText(inputField, '\t\n  ')
+        .pressKey('enter')
+        .expect(todoList.find('.todo-item').count).eql(initialCount);
+});
