@@ -3,20 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
+    <title>Advanced Todo List</title>
+    <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Todo List</h1>
         
-        <form class="todo-form">
-            <input type="text" id="todo-input" placeholder="Add a new todo...">
+        <!--  Form structure -->
+        <form class="todo-form" id="todo-form">
+            <input type="text" id="todo-input" placeholder="Add a new todo..." required>
+            
+            <!-- Priority selection structure -->
+            <div class="priority-container">
+                <select id="priority-select" class="priority-select" aria-label="Select priority level">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            
             <button type="submit">Add Todo</button>
         </form>
         
-        <ul class="todo-list"></ul>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="progress-text">0% completed (0/0)</span>
+        </div>
+        
+        <!-- Todo list structure -->
+        <ul class="todo-list" id="todo-list">
+            <!-- Empty state structure -->
+            <li class="empty-state" id="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3>No todos yet!</h3>
+                <p>Add your first todo above to get started organizing your tasks.</p>
+            </li>
+        </ul>
     </div>
     
-    <script type="module" src="/src/main.ts"></script>
+    <!-- Theme toggle structure -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    
+    <script type="module" src="src/main.ts"></script>
 </body>
 </html>

@@ -1,109 +1,189 @@
 import './style.css'
 
+// SRP: Type definitions - Type system responsibility
+type Priority = 'low' | 'medium' | 'high';
+
 interface Todo {
   id: number;
   text: string;
   completed: boolean;
+  priority: Priority;
 }
 
+interface PriorityConfig {
+  label: string;
+  value: Priority;
+  color: string;
+  order: number;
+}
+
+// SRP: Application state - State management responsibility
 let todos: Todo[] = [];
 
-// SRP: Get DOM elements safely
+// SRP: Priority configuration - Configuration data responsibility
+const getPriorityOptions = (): PriorityConfig[] => {
+  return [
+    { label: 'High', value: 'high', color: '#ff6b8a', order: 3 },
+    { label: 'Medium', value: 'medium', color: '#ffd54f', order: 2 },
+    { label: 'Low', value: 'low', color: '#66d9a5', order: 1 }
+  ];
+};
+
+// SRP: DOM element references - DOM access responsibility
 const getDOMElements = () => {
   const todoInput = document.getElementById('todo-input') as HTMLInputElement;
-  const todoForm = document.querySelector('.todo-form') as HTMLFormElement;
-  const todoList = document.querySelector('.todo-list') as HTMLUListElement;
-  
-  // Debug: Check if elements exist
-  if (!todoInput) console.error('todo-input not found');
-  if (!todoForm) console.error('todo-form not found');
-  if (!todoList) console.error('todo-list not found');
-  
-  return { todoInput, todoForm, todoList };
-};
-
-const { todoInput, todoForm, todoList } = getDOMElements();
-
-// SRP: Create progress bar HTML structure
-const createProgressBarHTML = (): string => {
-  return `
-    <div class="progress-bar">
-      <div class="progress-fill"></div>
-    </div>
-    <span class="progress-text">0% completed</span>
-  `;
-};
-
-// SRP: Insert progress bar into DOM
-const insertProgressBar = (): void => {
-  const progressContainer = document.createElement('div');
-  progressContainer.className = 'progress-container';
-  progressContainer.innerHTML = createProgressBarHTML();
-  
-  // Insert after the form
-  if (todoForm && todoForm.parentNode) {
-    todoForm.parentNode.insertBefore(progressContainer, todoForm.nextSibling);
-  }
-};
-
-// SRP: Get progress bar elements
-const getProgressElements = () => {
+  const todoForm = document.getElementById('todo-form') as HTMLFormElement;
+  const todoList = document.getElementById('todo-list') as HTMLUListElement;
+  const prioritySelect = document.getElementById('priority-select') as HTMLSelectElement;
   const progressFill = document.querySelector('.progress-fill') as HTMLDivElement;
   const progressText = document.querySelector('.progress-text') as HTMLSpanElement;
+  const emptyState = document.getElementById('empty-state') as HTMLLIElement;
+  const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement;
   
-  if (!progressFill) console.error('progress-fill not found');
-  if (!progressText) console.error('progress-text not found');
-  
-  return { progressFill, progressText };
-};
-
-// Initialize progress bar
-insertProgressBar();
-const { progressFill, progressText } = getProgressElements();
-
-// SRP: Create a new todo object
-const createTodo = (text: string): Todo => {
   return {
-    id: Date.now(),
-    text: text.trim(),
-    completed: false
+    todoInput,
+    todoForm,
+    todoList,
+    prioritySelect,
+    progressFill,
+    progressText,
+    emptyState,
+    themeToggle
   };
 };
 
-// SRP: Add todo to array
+// SRP: Initialize DOM references - DOM initialization responsibility
+let elements: ReturnType<typeof getDOMElements>;
+
+const initializeDOMReferences = (): void => {
+  elements = getDOMElements();
+  
+  // SRP: Validate DOM elements - DOM validation responsibility
+  const requiredElements = [
+    'todoInput', 'todoForm', 'todoList', 'prioritySelect',
+    'progressFill', 'progressText', 'emptyState', 'themeToggle'
+  ];
+  
+  requiredElements.forEach(elementName => {
+    if (!elements[elementName as keyof typeof elements]) {
+      console.error(`Required element not found: ${elementName}`);
+    }
+  });
+};
+
+// SRP: Priority configuration lookup - Data lookup responsibility
+const getPriorityConfig = (priority: Priority): PriorityConfig => {
+  const options = getPriorityOptions();
+  return options.find(option => option.value === priority) || options[1];
+};
+
+// SRP: Priority selection retrieval - Form data extraction responsibility
+const getSelectedPriority = (): Priority => {
+  return (elements.prioritySelect?.value as Priority) || 'medium';
+};
+
+// SRP: Priority selection reset - Form reset responsibility
+const resetPrioritySelection = (): void => {
+  if (elements.prioritySelect) {
+    elements.prioritySelect.value = 'medium';
+  }
+};
+
+// SRP: Priority badge HTML creation - Badge HTML generation responsibility
+const createPriorityBadge = (priority: Priority): string => {
+  const config = getPriorityConfig(priority);
+  return `
+    <span class="priority-badge priority-${priority}" 
+          style="background-color: ${config.color}"
+          title="${config.label} Priority">
+      ${config.label}
+    </span>
+  `;
+};
+
+// SRP: Todo sorting algorithm - Sorting logic responsibility
+const sortTodosByPriority = (todos: Todo[]): Todo[] => {
+  return [...todos].sort((a, b) => {
+    // First sort by completion status (incomplete tasks first)
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+    // Then sort by priority order (high to low)
+    const configA = getPriorityConfig(a.priority);
+    const configB = getPriorityConfig(b.priority);
+    return configB.order - configA.order;
+  });
+};
+
+// SRP: Todo object creation - Object factory responsibility
+const createTodo = (text: string, priority: Priority = 'medium'): Todo => {
+  return {
+    id: Date.now(),
+    text: text.trim(),
+    completed: false,
+    priority: priority
+  };
+};
+
+// SRP: Todo array management - Array manipulation responsibility
 const addTodoToArray = (todo: Todo): void => {
   todos.push(todo);
   console.log('Todo added:', todo);
-  console.log('Current todos:', todos);
 };
 
-// SRP: Calculate progress percentage
+// SRP: Todo lookup - Data retrieval responsibility
+const findTodoById = (id: number): Todo | undefined => {
+  return todos.find(todo => todo.id === id);
+};
+
+// SRP: Todo removal - Array modification responsibility
+const removeTodoFromArray = (id: number): void => {
+  const initialLength = todos.length;
+  todos = todos.filter(todo => todo.id !== id);
+  console.log(`Removed todo. Count: ${initialLength} -> ${todos.length}`);
+};
+
+// SRP: Todo completion toggle - State modification responsibility
+const toggleTodoCompletion = (todo: Todo): void => {
+  todo.completed = !todo.completed;
+};
+
+// SRP: Todo toggle by ID - Todo state coordination responsibility
+const toggleTodo = (id: number): void => {
+  const todo = findTodoById(id);
+  if (todo) {
+    toggleTodoCompletion(todo);
+    console.log('Todo toggled:', todo);
+  }
+};
+
+// SRP: Progress calculation - Mathematical calculation responsibility
 const calculateProgress = (): number => {
   if (todos.length === 0) return 0;
   const completedCount = todos.filter(todo => todo.completed).length;
   return Math.round((completedCount / todos.length) * 100);
 };
 
-// SRP: Get completed count
+// SRP: Completed count calculation - Count calculation responsibility
 const getCompletedCount = (): number => {
   return todos.filter(todo => todo.completed).length;
 };
 
-// SRP: Update progress bar visual
+// SRP: Progress visual update - Visual update responsibility
 const updateProgressVisual = (percentage: number): void => {
-  if (progressFill) {
-    progressFill.style.width = `${percentage}%`;
+  if (elements.progressFill) {
+    elements.progressFill.style.width = `${percentage}%`;
   }
 };
 
-// SRP: Update progress text
+// SRP: Progress text update - Text content update responsibility
 const updateProgressText = (percentage: number, completed: number, total: number): void => {
-  if (progressText) {
-    progressText.textContent = `${percentage}% completed (${completed}/${total})`;
+  if (elements.progressText) {
+    elements.progressText.textContent = `${percentage}% completed (${completed}/${total})`;
   }
 };
 
-// SRP: Update entire progress display
+// SRP: Complete progress update - Progress coordination responsibility
 const updateProgressDisplay = (): void => {
   const percentage = calculateProgress();
   const completed = getCompletedCount();
@@ -113,86 +193,58 @@ const updateProgressDisplay = (): void => {
   updateProgressText(percentage, completed, total);
 };
 
-// SRP: Find todo by ID
-const findTodoById = (id: number): Todo | undefined => {
-  return todos.find(todo => todo.id === id);
-};
-
-// SRP: Toggle todo completion
-const toggleTodoCompletion = (todo: Todo): void => {
-  todo.completed = !todo.completed;
-};
-
-// SRP: Toggle todo by ID
-const toggleTodo = (id: number): void => {
-  const todo = findTodoById(id);
-  if (todo) {
-    toggleTodoCompletion(todo);
-    console.log('Todo toggled:', todo);
-  }
-};
-
-// SRP: Remove todo from array
-const removeTodoFromArray = (id: number): void => {
-  const initialLength = todos.length;
-  todos = todos.filter(todo => todo.id !== id);
-  console.log(`Removed todo. Count: ${initialLength} -> ${todos.length}`);
-};
-
-// SRP: Clear input field
+// Input field clearing 
 const clearInput = (): void => {
-  if (todoInput) {
-    todoInput.value = '';
+  if (elements.todoInput) {
+    elements.todoInput.value = '';
   }
 };
 
-// SRP: Create checkbox element
 const createCheckboxElement = (todo: Todo): string => {
   return `<input type="checkbox" ${todo.completed ? 'checked' : ''}>`;
 };
 
-// SRP: Create todo text element
 const createTodoTextElement = (todo: Todo): string => {
-  return `<span>${todo.text}</span>`;
+  return `<span class="todo-text">${todo.text}</span>`;
 };
 
-// SRP: Create remove button element
 const createRemoveButtonElement = (): string => {
   return `<button class="remove-btn">Remove</button>`;
 };
 
-// SRP: Create todo item HTML
 const createTodoItemHTML = (todo: Todo): string => {
   return `
     ${createCheckboxElement(todo)}
     ${createTodoTextElement(todo)}
+    ${createPriorityBadge(todo.priority)}
     ${createRemoveButtonElement()}
   `;
 };
 
-// SRP: Create todo DOM element
+// Todo DOM element creation 
 const createTodoElement = (todo: Todo): HTMLLIElement => {
   const li = document.createElement('li');
   li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
   li.innerHTML = createTodoItemHTML(todo);
+  li.setAttribute('data-todo-id', todo.id.toString());
   return li;
 };
 
-// SRP: Handle checkbox change
+// Checkbox event handling 
 const handleCheckboxChange = (todoId: number): void => {
   toggleTodo(todoId);
   renderTodos();
   updateProgressDisplay();
 };
 
-// SRP: Handle remove button click
+// Remove button event handling 
 const handleRemoveClick = (todoId: number): void => {
   removeTodoFromArray(todoId);
   renderTodos();
   updateProgressDisplay();
 };
 
-// SRP: Add event listeners to todo element
+// Todo event listeners setup 
 const addTodoEventListeners = (li: HTMLLIElement, todoId: number): void => {
   const checkbox = li.querySelector('input[type="checkbox"]') as HTMLInputElement;
   const removeButton = li.querySelector('.remove-btn') as HTMLButtonElement;
@@ -206,57 +258,79 @@ const addTodoEventListeners = (li: HTMLLIElement, todoId: number): void => {
   }
 };
 
-// SRP: Clear todo list
 const clearTodoList = (): void => {
-  if (todoList) {
-    todoList.innerHTML = '';
+  if (elements.todoList) {
+    const todoItems = elements.todoList.querySelectorAll('.todo-item');
+    todoItems.forEach(item => item.remove());
   }
 };
 
-// SRP: Append todo to list
 const appendTodoToList = (todoElement: HTMLLIElement): void => {
-  if (todoList) {
-    todoList.appendChild(todoElement);
+  if (elements.todoList) {
+    elements.todoList.appendChild(todoElement);
   }
 };
 
-// SRP: Render all todos
+const showEmptyState = (): void => {
+  if (elements.emptyState) {
+    elements.emptyState.style.display = 'block';
+  }
+};
+
+const hideEmptyState = (): void => {
+  if (elements.emptyState) {
+    elements.emptyState.style.display = 'none';
+  }
+};
+
+const isTodosListEmpty = (): boolean => {
+  return todos.length === 0;
+};
+
 const renderTodos = (): void => {
   clearTodoList();
   
-  todos.forEach((todo) => {
+  if (isTodosListEmpty()) {
+    showEmptyState();
+    return;
+  }
+  
+  hideEmptyState();
+  
+  const sortedTodos = sortTodosByPriority(todos);
+  
+  sortedTodos.forEach((todo) => {
     const li = createTodoElement(todo);
     addTodoEventListeners(li, todo.id);
     appendTodoToList(li);
   });
   
-  console.log('Rendered todos:', todos.length);
+  console.log('Rendered todos with priority sorting:', sortedTodos.length);
 };
 
-// SRP: Handle complete todo addition process
 const addTodo = (text: string): void => {
-  const newTodo = createTodo(text);
+  const priority = getSelectedPriority();
+  const newTodo = createTodo(text, priority);
   addTodoToArray(newTodo);
   renderTodos();
   updateProgressDisplay();
   clearInput();
+  resetPrioritySelection();
 };
 
-// SRP: Validate input text
 const isValidInput = (text: string): boolean => {
   return text.trim() !== '';
 };
 
-// SRP: Handle form submission
 const handleFormSubmit = (event: Event): void => {
   event.preventDefault();
   
-  if (!todoInput) {
+  if (!elements.todoInput) {
     console.error('Input element not found');
     return;
   }
   
-  const text = todoInput.value.trim();
+  const text = elements.todoInput.value.trim();
   console.log('Form submitted with text:', text);
   
   if (isValidInput(text)) {
@@ -266,86 +340,51 @@ const handleFormSubmit = (event: Event): void => {
   }
 };
 
-// SRP: Initialize event listeners
-const initializeEventListeners = (): void => {
-  if (todoForm) {
-    todoForm.addEventListener('submit', handleFormSubmit);
+const initializeFormEventListeners = (): void => {
+  if (elements.todoForm) {
+    elements.todoForm.addEventListener('submit', handleFormSubmit);
     console.log('Form event listener added');
   } else {
     console.error('Cannot add event listener: form not found');
   }
 };
 
-// SRP: Initialize application
-const initializeApp = (): void => {
-  console.log('Initializing app...');
-  initializeEventListeners();
-  renderTodos();
-  updateProgressDisplay();
-  console.log('App initialized');
-};
-
-// Start the application
-initializeApp();
-
-
-const createThemeToggleHTML = (): string => {
-  return '🌙';
-};
-
-// SRP: Create theme toggle button element
-const createThemeToggleButton = (): HTMLButtonElement => {
-  const button = document.createElement('button');
-  button.className = 'theme-toggle';
-  button.innerHTML = createThemeToggleHTML();
-  button.setAttribute('aria-label', 'Toggle dark mode');
-  return button;
-};
-
-// SRP: Insert theme toggle button into DOM
-const insertThemeToggleButton = (): HTMLButtonElement => {
-  const toggleButton = createThemeToggleButton();
-  document.body.appendChild(toggleButton);
-  return toggleButton;
-};
-
-// SRP: Check if dark mode is enabled
 const isDarkModeEnabled = (): boolean => {
   return document.body.classList.contains('dark-mode');
 };
 
-// SRP: Get stored theme preference
 const getStoredTheme = (): string | null => {
   return localStorage.getItem('theme');
 };
 
-// SRP: Store theme preference
 const storeTheme = (theme: string): void => {
   localStorage.setItem('theme', theme);
 };
 
-// SRP: Apply dark mode
+// Dark mode application 
 const applyDarkMode = (): void => {
   document.body.classList.add('dark-mode');
 };
 
-// SRP: Apply light mode
+// Light mode application 
 const applyLightMode = (): void => {
   document.body.classList.remove('dark-mode');
 };
 
-const updateToggleButtonIcon = (button: HTMLButtonElement): void => {
+const updateThemeToggleIcon = (): void => {
+  if (!elements.themeToggle) return;
+  
   if (isDarkModeEnabled()) {
-    button.innerHTML = '☀️';
-    button.setAttribute('aria-label', 'Toggle light mode');
+    elements.themeToggle.innerHTML = '☀️';
+    elements.themeToggle.setAttribute('aria-label', 'Toggle light mode');
   } else {
-    button.innerHTML = '🌙';
-    button.setAttribute('aria-label', 'Toggle dark mode');
+    elements.themeToggle.innerHTML = '🌙';
+    elements.themeToggle.setAttribute('aria-label', 'Toggle dark mode');
   }
 };
 
-// SRP: Toggle theme mode
-const toggleTheme = (button: HTMLButtonElement): void => {
+//  Theme toggle logic 
+const toggleTheme = (): void => {
   if (isDarkModeEnabled()) {
     applyLightMode();
     storeTheme('light');
@@ -353,10 +392,9 @@ const toggleTheme = (button: HTMLButtonElement): void => {
     applyDarkMode();
     storeTheme('dark');
   }
-  updateToggleButtonIcon(button);
+  updateThemeToggleIcon();
 };
 
-// SRP: Apply stored theme on load
 const applyStoredTheme = (): void => {
   const storedTheme = getStoredTheme();
   if (storedTheme === 'dark') {
@@ -366,23 +404,44 @@ const applyStoredTheme = (): void => {
   }
 };
 
-// SRP: Handle theme toggle button click
-const handleThemeToggleClick = (button: HTMLButtonElement): void => {
-  toggleTheme(button);
+const handleThemeToggleClick = (): void => {
+  toggleTheme();
 };
 
-// SRP: Add event listener to theme toggle button
-const addThemeToggleEventListener = (button: HTMLButtonElement): void => {
-  button.addEventListener('click', () => handleThemeToggleClick(button));
+// Theme event listeners setup 
+const initializeThemeEventListeners = (): void => {
+  if (elements.themeToggle) {
+    elements.themeToggle.addEventListener('click', handleThemeToggleClick);
+    console.log('Theme toggle event listener added');
+  } else {
+    console.error('Cannot add event listener: theme toggle not found');
+  }
 };
 
-// SRP: Initialize theme toggle functionality
-const initializeThemeToggle = (): void => {
+// Theme system initialization 
+const initializeThemeSystem = (): void => {
   applyStoredTheme();
-  const toggleButton = insertThemeToggleButton();
-  updateToggleButtonIcon(toggleButton);
-  addThemeToggleEventListener(toggleButton);
-  console.log('Theme toggle initialized');
+  updateThemeToggleIcon();
+  initializeThemeEventListeners();
+  console.log('Theme system initialized');
 };
 
-initializeThemeToggle();
+const initializeApp = (): void => {
+  console.log('Initializing app...');
+  initializeDOMReferences();
+  initializeFormEventListeners();
+  initializeThemeSystem();
+  renderTodos();
+  updateProgressDisplay();
+  console.log('App initialized');
+};
+
+const startApplication = (): void => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  } else {
+    initializeApp();
+  }
+};
+
+startApplication();
