@@ -245,11 +245,7 @@ const appendTodoToList = (todoElement: HTMLLIElement): void => {
   }
 };
 
-const showEmptyState = (): void => {
-  if (elements.emptyState) {
-    elements.emptyState.style.display = 'block';
-  }
-};
+
 
 const hideEmptyState = (): void => {
   if (elements.emptyState) {
@@ -257,9 +253,6 @@ const hideEmptyState = (): void => {
   }
 };
 
-const isTodosListEmpty = (): boolean => {
-  return todos.length === 0;
-};
 
 const addTodo = (text: string): void => {
   const priority = getSelectedPriority();
@@ -653,9 +646,6 @@ const getEmptyStateContentForFilter = (filterStatus: FilterStatus): string => {
   }
 };
 
-const renderTodos = (): void => {
-  renderFilteredTodos();
-};
 
 const initializeApp = (): void => {
   console.log('Initializing app...');

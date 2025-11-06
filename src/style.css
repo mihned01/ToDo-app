@@ -73,8 +73,6 @@ body {
   box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 600px;
-  max-height: 750px;
-  max-height: fixed;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
@@ -276,41 +274,7 @@ h1 {
 }
 
 .todo-list {
-  min-height: 300px;
-  max-height: 280px; /* Set maximum height for scroll */
-  overflow-y: auto; /* Enable vertical scrolling */
-  overflow-x: hidden; /* Hide horizontal scrolling */
-  padding-right: 8px; /* Space for custom scrollbar */
-  margin-right: -8px; /* Compensate for padding */
-  border-radius: 12px; /* Rounded corners for scroll area */
-}
-
-/* SRP: Scrollbar track styling - Track appearance responsibility */
-.todo-list::-webkit-scrollbar-track {
-  background: var(--surface-secondary);
-  border-radius: 8px;
-  margin: 4px 0;
-}
-
-/* SRP: Scrollbar thumb styling - Thumb appearance responsibility */
-.todo-list::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  border-radius: 8px;
-  border: 2px solid var(--surface-secondary);
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
-  transition: var(--transition-normal);
-}
-
-/* SRP: Scrollbar thumb hover - Thumb interaction responsibility */
-.todo-list::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-active));
-  border-color: var(--surface-primary);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
-}
-
-/* SRP: Scrollbar corner styling - Corner appearance responsibility */
-.todo-list::-webkit-scrollbar-corner {
-  background: var(--surface-secondary);
+  min-height: 100px;
 }
 
 .todo-item {
@@ -326,32 +290,6 @@ h1 {
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(10px);
   position: relative;
-  scroll-margin-top: 12px; /* Smooth scroll positioning */
-}
-
-/* SRP: Last todo item spacing - Last item spacing responsibility */
-.todo-item:last-child {
-  margin-bottom: 8px; /* Reduced margin for last item */
-}
-
-body.dark-mode .todo-list::-webkit-scrollbar-track {
-  background: var(--surface-tertiary);
-}
-
-body.dark-mode .todo-list::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  border-color: var(--surface-tertiary);
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
-}
-
-body.dark-mode .todo-list::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-active));
-  border-color: var(--surface-secondary);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
-}
-
-body.dark-mode .todo-list::-webkit-scrollbar-corner {
-  background: var(--surface-tertiary);
 }
 
 .todo-item::before {
