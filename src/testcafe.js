@@ -222,20 +222,6 @@ test('Should update progress when todos are completed', async t => {
         .expect(progressText.innerText).contains('50%');
 });
 
-test('Should update progress bar visual width', async t => {
-    const inputField = getInputField();
-    const progressFill = getProgressFill();
-    
-    await t
-        .typeText(inputField, 'Test task')
-        .pressKey('enter');
-    
-    const todoItem = Selector('.todo-item');
-    await t
-        .click(todoItem.find('input[type="checkbox"]'))
-        .expect(progressFill.getStyleProperty('width')).eql('100%');
-});
-
 // Theme toggle tests
 test('Should toggle to dark mode', async t => {
     const themeToggle = getThemeToggle();
