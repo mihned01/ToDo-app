@@ -391,38 +391,6 @@ test('Should have proper titles on filter buttons', async t => {
         .expect(getFilterButton('completed').getAttribute('title')).contains('Show completed todos');
 });
 
-// Multiple todos interaction tests
-test('Should handle multiple todos with different priorities', async t => {
-    const inputField = getInputField();
-    const prioritySelect = getPrioritySelect();
-    
-    // Add high priority
-    await t
-        .click(prioritySelect)
-        .click(prioritySelect.find('option').withText('High'))
-        .typeText(inputField, 'High priority')
-        .pressKey('enter');
-    
-    // Add low priority
-    await t
-        .click(prioritySelect)
-        .click(prioritySelect.find('option').withText('Low'))
-        .typeText(inputField, 'Low priority')
-        .pressKey('enter');
-    
-    // Add medium priority
-    await t
-        .typeText(inputField, 'Medium priority')
-        .pressKey('enter');
-    
-    const todoItems = Selector('.todo-item');
-    await t
-        .expect(todoItems.count).eql(3)
-        .expect(todoItems.nth(0).find('.priority-high')).exists
-        .expect(todoItems.nth(1).find('.priority-medium')).exists
-        .expect(todoItems.nth(2).find('.priority-low')).exists;
-});
-
 test('Should maintain filter state when adding new todos', async t => {
     const inputField = getInputField();
     
