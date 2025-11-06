@@ -138,3 +138,21 @@ test('Should filter active todos only', async t => {
         .expect(Selector('.todo-item').count).eql(1)
         .expect(getTodoItem('Active task')).exists;
 });
+
+test('Should filter completed todos only', async t => {
+    const inputField = getInputField();
+    
+    await t
+        .typeText(inputField, 'Task to complete')
+        .pressKey('enter')
+        .typeText(inputField, 'Active task')
+        .pressKey('enter');
+    
+    const firstTodo = getTodoItem('Task to complete');
+    await t.click(firstTodo.find('input[type="checkbox"]'));
+    
+    await t
+        .click(getFilterButton('completed'))
+        .expect(Selector('.todo-item.completed').count).eql(1)
+        .expect(firstTodo.hasClass('completed')).ok();
+});
