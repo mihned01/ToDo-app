@@ -72,3 +72,15 @@ test('Should sort todos by priority order', async t => {
     const firstTodo = Selector('.todo-item').nth(0);
     await t.expect(firstTodo.find('.priority-badge.priority-high')).exists;
 });
+
+test('Should reset priority selection after adding todo', async t => {
+    const inputField = getInputField();
+    const prioritySelect = getPrioritySelect();
+    
+    await t
+        .click(prioritySelect)
+        .click(prioritySelect.find('option').withText('High'))
+        .typeText(inputField, 'Test task')
+        .pressKey('enter')
+        .expect(prioritySelect.value).eql('medium');
+});
