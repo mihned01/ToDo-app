@@ -368,3 +368,25 @@ test('Should show empty state for completed filter when no tasks completed', asy
         .expect(emptyState.innerText).contains('No completed tasks yet!');
 });
 
+// Form submission tests
+test('Should submit form with Enter key', async t => {
+    const inputField = getInputField();
+    const todoText = 'Enter key test';
+    
+    await t
+        .typeText(inputField, todoText)
+        .pressKey('enter')
+        .expect(getTodoItem(todoText)).exists;
+});
+
+test('Should prevent form submission with empty input', async t => {
+    const inputField = getInputField();
+    const todoList = getTodoList();
+    const initialCount = await todoList.find('.todo-item').count;
+    
+    await t
+        .click(inputField)
+        .pressKey('enter')
+        .expect(todoList.find('.todo-item').count).eql(initialCount);
+});
+
