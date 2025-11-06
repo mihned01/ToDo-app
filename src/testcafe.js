@@ -302,3 +302,22 @@ test('Should not add todo with only whitespace', async t => {
         .pressKey('enter')
         .expect(todoList.find('.todo-item').count).eql(initialCount);
 });
+
+test('Should clear input field after adding todo', async t => {
+    const inputField = getInputField();
+    
+    await t
+        .typeText(inputField, 'Test task')
+        .pressKey('enter')
+        .expect(inputField.value).eql('');
+});
+
+test('Should trim whitespace from todo text', async t => {
+    const inputField = getInputField();
+    const todoText = '  Trimmed task  ';
+    
+    await t
+        .typeText(inputField, todoText)
+        .pressKey('enter')
+        .expect(getTodoItem('Trimmed task')).exists;
+});
